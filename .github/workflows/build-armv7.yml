@@ -41,7 +41,7 @@ jobs:
         upx --best memos_linux_armv7 || echo "UPX not available, skipping compression"
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: memos-armv7-bin
         path: memos_linux_armv7
