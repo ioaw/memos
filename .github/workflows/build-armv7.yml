@@ -38,7 +38,7 @@ jobs:
         GOOS=linux GOARCH=arm GOARM=7 go build \
           -o memos_linux_armv7 \
           -ldflags="-s -w" \
-          ./main.go
+          ./bin/memos/main.go
         
         # 压缩二进制减少大小 (可选)
         upx --best memos_linux_armv7 || echo "UPX not available, skipping compression"
