@@ -1,223 +1,139 @@
 # Memos
 
-<img align="right" height="96px" src="https://www.usememos.com/logo-rounded.png" alt="Memos" />
+<img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
-A modern, open-source, self-hosted knowledge management and note-taking platform designed for privacy-conscious users and organizations. Memos provides a lightweight yet powerful solution for capturing, organizing, and sharing thoughts with comprehensive Markdown support and cross-platform accessibility.
+An open-source, self-hosted note-taking service. Your thoughts, your data, your control — no tracking, no ads, no subscription fees.
 
-<div align="center">
+[![Home](https://img.shields.io/badge/🏠-usememos.com-blue?style=flat-square)](https://usememos.com)
+[![Live Demo](https://img.shields.io/badge/✨-Try%20Demo-orange?style=flat-square)](https://demo.usememos.com/)
+[![Docs](https://img.shields.io/badge/📚-Documentation-green?style=flat-square)](https://usememos.com/docs)
+[![Discord](https://img.shields.io/badge/💬-Discord-5865f2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/tfPJa4UmAv)
+[![Docker Pulls](https://img.shields.io/docker/pulls/neosmemo/memos?style=flat-square&logo=docker)](https://hub.docker.com/r/neosmemo/memos)
 
-[![Home Page](https://img.shields.io/badge/Home-www.usememos.com-blue)](https://www.usememos.com)
-[![Documentation](https://img.shields.io/badge/Docs-Available-green)](https://www.usememos.com/docs)
-[![Live Demo](https://img.shields.io/badge/Demo-Try%20Now-orange)](https://demo.usememos.com/)
-[![Blog](https://img.shields.io/badge/Blog-Read%20More-lightblue)](https://www.usememos.com/blog)
+<img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png" alt="Memos Demo Screenshot" height="512" />
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/neosmemo/memos.svg)](https://hub.docker.com/r/neosmemo/memos)
-[![Docker Image Size](https://img.shields.io/docker/image-size/neosmemo/memos?sort=semver)](https://hub.docker.com/r/neosmemo/memos)
-[![Discord](https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5)](https://discord.gg/tfPJa4UmAv)
+### 💎 Featured Sponsors
 
-</div>
+[**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
 
-![Memos Application Screenshot](https://www.usememos.com/demo.png)
+<a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp - The AI-powered terminal built for speed and collaboration" width="512" />
+</a>
 
-## Table of Contents
+---
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Quick Start](#quick-start)
-- [Installation Methods](#installation-methods)
-- [Development Setup](#development-setup)
-- [Contributing](#contributing)
-- [License](#license)
+[**LambdaTest** - Cross-browser testing cloud](https://www.lambdatest.com/?utm_source=memos&utm_medium=sponsor)
+  
+<a href="https://www.lambdatest.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
+  <img src="https://www.lambdatest.com/blue-logo.png" alt="LambdaTest - Cross-browser testing cloud" height="50" />
+</a>
 
 ## Overview
 
-Memos is a lightweight, self-hosted alternative to cloud-based note-taking services. Built with privacy and performance in mind, it offers a comprehensive platform for personal knowledge management without compromising data ownership or security.
+Memos is a privacy-first, self-hosted knowledge base that works seamlessly for personal notes, team wikis, and knowledge management. Built with Go and React, it offers lightning-fast performance without compromising on features or usability.
 
-## Key Features
+**Why choose Memos over cloud services?**
 
-### Data Privacy and Security
+| Feature           | Memos                          | Cloud Services                |
+| ----------------- | ------------------------------ | ----------------------------- |
+| **Privacy**       | ✅ Self-hosted, zero telemetry | ❌ Your data on their servers |
+| **Cost**          | ✅ Free forever, MIT license   | ❌ Subscription fees          |
+| **Performance**   | ✅ Instant load, no latency    | ⚠️ Depends on internet        |
+| **Ownership**     | ✅ Full control & export       | ❌ Vendor lock-in             |
+| **API Access**    | ✅ Full REST + gRPC APIs       | ⚠️ Limited or paid            |
+| **Customization** | ✅ Open source, forkable       | ❌ Closed ecosystem           |
 
-- **Complete Data Ownership**: All application data is stored locally in your chosen database
-- **Self-Hosted Architecture**: Full control over your data infrastructure and access policies
-- **No External Dependencies**: Runtime operations require no third-party services or cloud connections
+## Features
 
-### Content Creation and Management
+- **🔒 Privacy-First Architecture**
 
-- **Plain Text Efficiency**: Streamlined text input with immediate save functionality
-- **Advanced Markdown Support**: Comprehensive Markdown rendering with syntax highlighting
-- **Rich Media Integration**: Support for images, links, and embedded content
+  - Self-hosted on your infrastructure with zero telemetry
+  - Complete data ownership and export capabilities
+  - No tracking, no ads, no vendor lock-in
 
-### Technical Excellence
+- **📝 Markdown Native**
 
-- **High-Performance Backend**: Built with Go for optimal resource utilization and scalability
-- **Modern Frontend**: React.js-based user interface with responsive design
-- **Lightweight Deployment**: Minimal system requirements with efficient resource consumption
-- **Cross-Platform Compatibility**: Supports Linux, macOS, Windows, and containerized environments
+  - Full markdown support
+  - Plain text storage — take your data anywhere
 
-### Customization and Extensibility
+- **⚡ Blazing Fast**
 
-- **Configurable Interface**: Customizable server branding, themes, and user interface elements
-- **API-First Design**: RESTful API with comprehensive documentation for third-party integrations
-- **Multi-Database Support**: Compatible with SQLite, PostgreSQL, and MySQL databases
+  - Built with Go backend and React frontend
+  - Optimized for performance at any scale
 
-### Cost-Effective Solution
+- **🐳 Simple Deployment**
 
-- **Open Source License**: MIT licensed with full source code availability
-- **Zero Licensing Costs**: No subscription fees, usage limits, or premium tiers
-- **Community-Driven Development**: Active community contribution and transparent development process
+  - One-line Docker installation
+  - Supports SQLite, MySQL, and PostgreSQL
+
+- **🔗 Developer-Friendly**
+
+  - Full REST and gRPC APIs
+  - Easy integration with existing workflows
+
+- **🎨 Beautiful Interface**
+  - Clean, minimal design and dark mode support
+  - Mobile-responsive layout
 
 ## Quick Start
 
-### Prerequisites
-
-- [Docker](https://www.docker.com/) or Docker Compose installed on your system
-- Minimum 512MB RAM and 1GB available disk space
-
-### Docker Deployment
-
-Deploy Memos in production mode using Docker:
+### Docker (Recommended)
 
 ```bash
-# Create data directory
-mkdir -p ~/.memos
-
-# Run Memos container
 docker run -d \
   --name memos \
-  --restart unless-stopped \
   -p 5230:5230 \
   -v ~/.memos:/var/opt/memos \
   neosmemo/memos:stable
 ```
 
-Access the application at `http://localhost:5230` and complete the initial setup process.
+Open `http://localhost:5230` and start writing!
 
-### Docker Compose Deployment
+### Try the Live Demo
 
-For advanced configurations, use Docker Compose:
+Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first!
 
-```yaml
-# docker-compose.yml
-version: "3.8"
-services:
-  memos:
-    image: neosmemo/memos:stable
-    container_name: memos
-    restart: unless-stopped
-    ports:
-      - "5230:5230"
-    volumes:
-      - ./data:/var/opt/memos
-    environment:
-      - MEMOS_MODE=prod
-      - MEMOS_PORT=5230
-```
+### Other Installation Methods
 
-Deploy with:
+- **Docker Compose** - Recommended for production deployments
+- **Pre-built Binaries** - Available for Linux, macOS, and Windows
+- **Kubernetes** - Helm charts and manifests available
+- **Build from Source** - For development and customization
 
-```bash
-docker-compose up -d
-```
-
-> **Note**: The data directory (`~/.memos/` or `./data/`) stores all application data including the database, uploaded files, and configuration. Ensure this directory is included in your backup strategy.
->
-> **Platform Compatibility**: The above commands are optimized for Unix-like systems (Linux, macOS). For Windows deployments, please refer to the [Windows-specific documentation](https://www.usememos.com/docs/install/container-install#docker-on-windows).
-
-## Installation Methods
-
-Memos supports multiple installation approaches to accommodate different deployment scenarios:
-
-### Container Deployment
-
-- **Docker Hub**: Official images available at `neosmemo/memos`
-- **GitHub Container Registry**: Alternative registry with the same image versions
-- **Kubernetes**: Helm charts and YAML manifests for cluster deployments
-
-### Binary Installation
-
-- **Pre-compiled Binaries**: Available for Linux, macOS, and Windows on the [releases page](https://github.com/usememos/memos/releases)
-
-### Source Installation
-
-- **Go Build**: Compile from source using Go 1.24 or later
-- **Development Mode**: Local development setup with hot reloading
-
-For detailed installation instructions, refer to the [comprehensive installation guide](https://www.usememos.com/docs/install).
-
-## Development Setup
-
-### Prerequisites
-
-- [Go 1.24](https://go.dev/) or later
-- [Node.js 22+](https://nodejs.org/en) and [pnpm](https://pnpm.io/)
-- [Git](https://git-scm.com/) for version control
-
-### Backend Development
-
-```bash
-# Clone the repository
-git clone https://github.com/usememos/memos.git
-cd memos
-
-# Install Go dependencies
-go mod download
-
-# Run the backend server
-go run ./bin/memos/main.go --mode dev --port 8081
-```
-
-### Frontend Development
-
-```bash
-# Navigate to web directory
-cd web
-
-# Install dependencies
-pnpm install
-
-# Start development server
-pnpm dev
-```
-
-The development servers will be available at:
-
-- Backend API: `http://localhost:8081`
-- Frontend: `http://localhost:3001`
+See our [installation guide](https://usememos.com/docs/installation) for detailed instructions.
 
 ## Contributing
 
-Memos is an open-source project that welcomes contributions from developers, designers, and users worldwide. We maintain a collaborative and inclusive development environment that values quality, innovation, and community feedback.
+We welcome contributions of all kinds! Whether you're fixing bugs, adding features, improving documentation, or helping with translations — every contribution matters.
 
-### Ways to Contribute
+**Ways to contribute:**
 
-- **Code Contributions**: Bug fixes, feature implementations, and performance improvements
-- **Documentation**: API documentation, user guides, and technical specifications
-- **Testing**: Quality assurance, test case development, and bug reporting
-- **Localization**: Translation support for multiple languages and regions
-- **Community Support**: Helping users on Discord, GitHub discussions, and forums
+- 🐛 [Report bugs](https://github.com/usememos/memos/issues/new?template=bug_report.md)
+- 💡 [Suggest features](https://github.com/usememos/memos/issues/new?template=feature_request.md)
+- 🔧 [Submit pull requests](https://github.com/usememos/memos/pulls)
+- 📖 [Improve documentation](https://github.com/usememos/memos/tree/main/docs)
+- 🌍 [Help with translations](https://github.com/usememos/memos/tree/main/web/src/locales)
+
+## Sponsors
+
+Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help keep the project growing!
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
 
 ## License
 
-Memos is released under the MIT License, providing maximum flexibility for both personal and commercial use. This license allows for:
+Memos is open-source software licensed under the [MIT License](LICENSE).
 
-- **Commercial Use**: Deploy Memos in commercial environments without licensing fees
-- **Modification**: Adapt and customize the codebase for specific requirements
-- **Distribution**: Share modified versions while maintaining license attribution
-- **Private Use**: Use Memos internally without disclosure requirements
+## Privacy Policy
 
-See the [LICENSE](./LICENSE) file for complete licensing terms.
+Memos is built with privacy as a core principle. As a self-hosted application, all your data stays on your infrastructure. There is no telemetry, no tracking, and no data collection. See our [Privacy Policy](https://usememos.com/privacy) for details.
 
-## Project Status
+---
 
-> **Development Status**: Memos is actively maintained and under continuous development. While the core functionality is stable and production-ready, users should expect regular updates, feature additions, and potential breaking changes as the project evolves.
->
-> **Version Compatibility**: We maintain backward compatibility for data storage and API interfaces where possible. Migration guides are provided for major version transitions.
+**[Website](https://usememos.com)** • **[Documentation](https://usememos.com/docs)** • **[Demo](https://demo.usememos.com/)** • **[Discord](https://discord.gg/tfPJa4UmAv)** • **[X/Twitter](https://x.com/usememos)**
 
-## Support and Community
-
-- **Documentation**: [Official Documentation](https://www.usememos.com/docs)
-- **Community Chat**: [Discord Server](https://discord.gg/tfPJa4UmAv)
-- **Issue Tracking**: [GitHub Issues](https://github.com/usememos/memos/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/usememos/memos/discussions)
-
-[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
+<a href="https://vercel.com/oss">
+  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
+</a>

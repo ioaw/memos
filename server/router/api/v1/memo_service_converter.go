@@ -6,25 +6,20 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/usememos/gomark/parser"
-	"github.com/usememos/gomark/parser/tokenizer"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction) (*v1pb.Memo, error) {
+func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+		return nil, errors.Wrap(err, "failed to get instance memo related setting")
 	}
-	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+	if instanceMemoRelatedSetting.DisplayWithUpdateTime {
 		displayTs = memo.UpdatedTs
 	}
 
@@ -51,44 +46,27 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		memoMessage.Parent = &parentName
 	}
 
+	memoMessage.Reactions = []*v1pb.Reaction{}
+
+	for _, reaction := range reactions {
+		reactionResponse := convertReactionFromStore(reaction)
+		memoMessage.Reactions = append(memoMessage.Reactions, reactionResponse)
+	}
+
 	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &v1pb.ListMemoRelationsRequest{Name: name})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list memo relations")
 	}
 	memoMessage.Relations = listMemoRelationsResponse.Relations
 
-	listMemoAttachmentsResponse, err := s.ListMemoAttachments(ctx, &v1pb.ListMemoAttachmentsRequest{Name: name})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to list memo attachments")
-	}
-	memoMessage.Attachments = listMemoAttachmentsResponse.Attachments
+	memoMessage.Attachments = []*v1pb.Attachment{}
 
-	if len(reactions) > 0 {
-		for _, reaction := range reactions {
-			reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-			}
-			memoMessage.Reactions = append(memoMessage.Reactions, reactionMessage)
-		}
-	} else {
-		// done for backwards compatibility
-		// can remove once convertMemoFromStore is only responsible for mapping
-		// and all related DB entities are passed in as arguments purely for converting to request entities
-		listMemoReactionsResponse, err := s.ListMemoReactions(ctx, &v1pb.ListMemoReactionsRequest{Name: name})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to list memo reactions")
-		}
-		memoMessage.Reactions = listMemoReactionsResponse.Reactions
+	for _, attachment := range attachments {
+		attachmentResponse := convertAttachmentFromStore(attachment)
+		memoMessage.Attachments = append(memoMessage.Attachments, attachmentResponse)
 	}
 
-	nodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse content")
-	}
-	memoMessage.Nodes = convertFromASTNodes(nodes)
-
-	snippet, err := getMemoContentSnippet(memo.Content)
+	snippet, err := s.getMemoContentSnippet(memo.Content)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo content snippet")
 	}
@@ -146,8 +124,6 @@ func convertVisibilityFromStore(visibility store.Visibility) v1pb.Visibility {
 
 func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	switch visibility {
-	case v1pb.Visibility_PRIVATE:
-		return store.Private
 	case v1pb.Visibility_PROTECTED:
 		return store.Protected
 	case v1pb.Visibility_PUBLIC:

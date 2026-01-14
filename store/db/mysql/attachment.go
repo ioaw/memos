@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -30,7 +31,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 	}
 	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
 
-	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	stmt := "INSERT INTO `attachment` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
@@ -49,36 +50,73 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
-		where, args = append(where, "`id` = ?"), append(args, *v)
+		where, args = append(where, "`attachment`.`id` = ?"), append(args, *v)
 	}
 	if v := find.UID; v != nil {
-		where, args = append(where, "`uid` = ?"), append(args, *v)
+		where, args = append(where, "`attachment`.`uid` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "`creator_id` = ?"), append(args, *v)
+		where, args = append(where, "`attachment`.`creator_id` = ?"), append(args, *v)
 	}
 	if v := find.Filename; v != nil {
-		where, args = append(where, "`filename` = ?"), append(args, *v)
+		where, args = append(where, "`attachment`.`filename` = ?"), append(args, *v)
 	}
 	if v := find.FilenameSearch; v != nil {
-		where, args = append(where, "`filename` LIKE ?"), append(args, "%"+*v+"%")
+		where, args = append(where, "`attachment`.`filename` LIKE ?"), append(args, "%"+*v+"%")
 	}
 	if v := find.MemoID; v != nil {
-		where, args = append(where, "`memo_id` = ?"), append(args, *v)
+		where, args = append(where, "`attachment`.`memo_id` = ?"), append(args, *v)
+	}
+	if len(find.MemoIDList) > 0 {
+		placeholders := make([]string, 0, len(find.MemoIDList))
+		for range find.MemoIDList {
+			placeholders = append(placeholders, "?")
+		}
+		where = append(where, "`attachment`.`memo_id` IN ("+strings.Join(placeholders, ",")+")")
+		for _, id := range find.MemoIDList {
+			args = append(args, id)
+		}
 	}
 	if find.HasRelatedMemo {
-		where = append(where, "`memo_id` IS NOT NULL")
+		where = append(where, "`attachment`.`memo_id` IS NOT NULL")
 	}
 	if find.StorageType != nil {
-		where, args = append(where, "`storage_type` = ?"), append(args, find.StorageType.String())
+		where, args = append(where, "`attachment`.`storage_type` = ?"), append(args, find.StorageType.String())
 	}
 
-	fields := []string{"`id`", "`uid`", "`filename`", "`type`", "`size`", "`creator_id`", "UNIX_TIMESTAMP(`created_ts`)", "UNIX_TIMESTAMP(`updated_ts`)", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
+	if len(find.Filters) > 0 {
+		engine, err := filter.DefaultAttachmentEngine()
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get filter engine")
+		}
+		if err := filter.AppendConditions(ctx, engine, find.Filters, filter.DialectMySQL, &where, &args); err != nil {
+			return nil, errors.Wrap(err, "failed to append filter conditions")
+		}
+	}
+
+	fields := []string{
+		"`attachment`.`id` AS `id`",
+		"`attachment`.`uid` AS `uid`",
+		"`attachment`.`filename` AS `filename`",
+		"`attachment`.`type` AS `type`",
+		"`attachment`.`size` AS `size`",
+		"`attachment`.`creator_id` AS `creator_id`",
+		"UNIX_TIMESTAMP(`attachment`.`created_ts`) AS `created_ts`",
+		"UNIX_TIMESTAMP(`attachment`.`updated_ts`) AS `updated_ts`",
+		"`attachment`.`memo_id` AS `memo_id`",
+		"`attachment`.`storage_type` AS `storage_type`",
+		"`attachment`.`reference` AS `reference`",
+		"`attachment`.`payload` AS `payload`",
+		"CASE WHEN `memo`.`uid` IS NOT NULL THEN `memo`.`uid` ELSE NULL END AS `memo_uid`",
+	}
 	if find.GetBlob {
-		fields = append(fields, "`blob`")
+		fields = append(fields, "`attachment`.`blob` AS `blob`")
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s ORDER BY `updated_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
+	query := "SELECT " + strings.Join(fields, ", ") + " FROM `attachment`" + " " +
+		"LEFT JOIN `memo` ON `attachment`.`memo_id` = `memo`.`id`" + " " +
+		"WHERE " + strings.Join(where, " AND ") + " " +
+		"ORDER BY `updated_ts` DESC"
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -111,6 +149,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			&storageType,
 			&attachment.Reference,
 			&payloadBytes,
+			&attachment.MemoUID,
 		}
 		if find.GetBlob {
 			dests = append(dests, &attachment.Blob)
@@ -177,7 +216,7 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	}
 
 	args = append(args, update.ID)
-	stmt := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
+	stmt := "UPDATE `attachment` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
@@ -189,7 +228,7 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 }
 
 func (d *DB) DeleteAttachment(ctx context.Context, delete *store.DeleteAttachment) error {
-	stmt := "DELETE FROM `resource` WHERE `id` = ?"
+	stmt := "DELETE FROM `attachment` WHERE `id` = ?"
 	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {
 		return err

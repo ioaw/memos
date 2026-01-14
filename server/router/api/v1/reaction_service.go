@@ -26,19 +26,19 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 		Reactions: []*v1pb.Reaction{},
 	}
 	for _, reaction := range reactions {
-		reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-		}
+		reactionMessage := convertReactionFromStore(reaction)
 		response.Reactions = append(response.Reactions, reactionMessage)
 	}
 	return response, nil
 }
 
 func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.UpsertMemoReactionRequest) (*v1pb.Reaction, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
@@ -49,17 +49,39 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 		return nil, status.Errorf(codes.Internal, "failed to upsert reaction")
 	}
 
-	reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-	}
+	reactionMessage := convertReactionFromStore(reaction)
+
 	return reactionMessage, nil
 }
 
 func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
-	reactionID, err := ExtractReactionIDFromName(request.Name)
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	_, reactionID, err := ExtractMemoReactionIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
+	}
+
+	// Get reaction and check ownership.
+	reaction, err := s.Store.GetReaction(ctx, &store.FindReaction{
+		ID: &reactionID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get reaction")
+	}
+	if reaction == nil {
+		// Return permission denied to avoid revealing if reaction exists.
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if reaction.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
@@ -71,20 +93,15 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*v1pb.Reaction, error) {
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &reaction.CreatorID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
+func convertReactionFromStore(reaction *store.Reaction) *v1pb.Reaction {
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
+	// Generate nested resource name: memos/{memo}/reactions/{reaction}
+	// reaction.ContentID already contains "memos/{memo}"
 	return &v1pb.Reaction{
-		Name:         fmt.Sprintf("%s%s", ReactionNamePrefix, reactionUID),
-		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, creator.ID),
+		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
+		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, reaction.CreatorID),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,
 		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
-	}, nil
+	}
 }

@@ -251,21 +251,6 @@
       "title": "Token Akses",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Sesi Aktif",
-      "description": "Daftar semua sesi aktif untuk akun Anda. Sesi akan otomatis berakhir 2 minggu setelah aktivitas terakhir. Anda dapat mencabut sesi mana pun kecuali sesi saat ini.",
-      "device": "Perangkat",
-      "location": "Lokasi",
-      "last-active": "Terakhir Aktif",
-      "expires": "Berakhir",
-      "current": "Saat ini",
-      "never": "Tidak Pernah",
-      "session-revocation": "Apakah Anda yakin ingin mencabut sesi {{sessionId}}? Anda perlu masuk kembali di perangkat tersebut.",
-      "session-revoked": "Sesi berhasil dicabut",
-      "revoke-session": "Cabut sesi",
-      "cannot-revoke-current": "Tidak dapat mencabut sesi saat ini",
-      "no-sessions": "Tidak ada sesi aktif yang ditemukan"
-    },
     "account-section": {
       "change-password": "Ubah kata sandi",
       "email-note": "Opsional",
@@ -278,11 +263,6 @@
       "title": "Informasi Akun",
       "update-information": "Perbarui Informasi",
       "username-note": "Digunakan untuk masuk"
-    },
-    "appearance-option": {
-      "dark": "Selalu gelap",
-      "light": "Selalu terang",
-      "system": "Ikuti sistem"
     },
     "member": "Anggota",
     "member-list": "Daftar Anggota",
@@ -299,7 +279,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Batas panjang konten (Byte)",
       "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
-      "enable-link-preview": "Aktifkan pratinjau tautan",
       "enable-memo-comments": "Aktifkan komentar memo",
       "enable-memo-location": "Aktifkan lokasi memo",
       "reactions": "Reaksi",
@@ -310,7 +289,6 @@
     "preference-section": {
       "default-memo-sort-option": "Waktu tampil memo",
       "default-memo-visibility": "Visibilitas memo default",
-      "apperance": "Tampilan",
       "theme": "Tema"
     },
     "sso": "SSO",
@@ -381,13 +359,11 @@
       "additional-style-placeholder": "Kode CSS tambahan",
       "allow-user-signup": "Izinkan pendaftaran pengguna",
       "customize-server": {
-        "appearance": "Tampilan Server",
         "description": "Deskripsi",
         "icon-url": "URL Ikon",
         "locale": "Locale Server",
         "title": "Sesuaikan Server"
       },
-      "disable-markdown-shortcuts-in-editor": "Nonaktifkan pintasan Markdown di editor",
       "disable-password-login": "Nonaktifkan login kata sandi",
       "disable-password-login-final-warning": "Silakan ketik \"KONFIRMASI\" jika Anda tahu apa yang Anda lakukan.",
       "disable-password-login-warning": "Ini akan menonaktifkan login kata sandi untuk semua pengguna. Tidak mungkin untuk login tanpa mengembalikan pengaturan ini di basis data jika penyedia identitas yang Anda konfigurasikan gagal. Anda juga harus lebih berhati-hati saat menghapus penyedia identitas.",
@@ -417,7 +393,7 @@
       "title": "Webhook",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Larangan mengubah nama panggilan",
       "disallow-change-username": "Larangan mengubah nama pengguna",
       "disallow-password-auth": "Larangan autentikasi kata sandi",
